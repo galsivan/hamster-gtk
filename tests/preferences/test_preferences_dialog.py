@@ -11,9 +11,10 @@ class TestPreferencesDialog(object):
     def test_init(self, dummy_window, app, config):
         """Make instantiation works as expected."""
         result = PreferencesDialog(dummy_window, app, config)
-        grid = result.get_content_area().get_children()[0]
+        grids = result.get_content_area().get_children()[0].get_children()[1].get_children()
         # This assumes 2 children per config entry (label and widget).
-        assert len(grid.get_children()) / 2 == len(config.keys())
+        grid_entry_counts = map(lambda g: len(g.get_children()) / 2, grids)
+        assert sum(grid_entry_counts) == len(config.keys())
 
     def test_get_config(self, dummy_window, app, initial_config_parametrized):
         """
@@ -31,5 +32,6 @@ class TestPreferencesDialog(object):
         dialog = PreferencesDialog(dummy_window, app, initial_config_parametrized)
         another_config_parametrized = initial_config_parametrized
         dialog._set_config(another_config_parametrized)
-        for key, (_label, widget) in dialog._fields.items():
-            assert widget.get_config_value() == initial_config_parametrized[key]
+        for stack_key, (stack_title, stack_fields) in dialog._fields.items():
+            for key, (label, widget) in stack_fields.items():
+                assert widget.get_config_value() == initial_config_parametrized[key]

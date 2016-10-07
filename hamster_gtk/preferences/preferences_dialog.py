@@ -60,25 +60,39 @@ class PreferencesDialog(Gtk.Dialog):
 
         # We use an ordered dict as the order reflects display order as well.
         self._fields = collections.OrderedDict([
-            ('day_start', (_('_Day Start (HH:MM:SS)'), TimeEntry())),
-            ('fact_min_delta', (_('_Minimal Fact Duration'),
-                HamsterSpinButton(SimpleAdjustment(0, GObject.G_MAXDOUBLE, 1)))),
-            ('store', (_('_Store'), HamsterComboBoxText(stores))),
-            ('db_engine', (_('DB _Engine'), HamsterComboBoxText(db_engines))),
-            ('db_path', (_('DB _Path'), ComboFileChooser())),
-            ('tmpfile_path', (_('_Temporary file'), ComboFileChooser())),
+            ('tracking',
+                (_('Tracking'), collections.OrderedDict([
+                    ('day_start', (_('_Day Start (HH:MM:SS)'), TimeEntry())),
+                    ('fact_min_delta', (_('_Minimal Fact Duration'),
+                        HamsterSpinButton(SimpleAdjustment(0, GObject.G_MAXDOUBLE, 1)))),
+                ]))),
+            ('storage',
+                (_('Storage'), collections.OrderedDict([
+                    ('store', (_('_Store'), HamsterComboBoxText(stores))),
+                    ('db_engine', (_('DB _Engine'), HamsterComboBoxText(db_engines))),
+                    ('db_path', (_('DB _Path'), ComboFileChooser())),
+                    ('tmpfile_path', (_('_Temporary file'), ComboFileChooser())),
+                ]))),
         ])
 
         grid = Gtk.Grid()
-        grid.set_hexpand(True)
-        row = 0
-        for key, (label, widget) in self._fields.items():
-            label_widget = Gtk.Label(label)
-            label_widget.set_use_underline(True)
-            label_widget.set_mnemonic_widget(widget)
-            grid.attach(label_widget, 0, row, 1, 1)
-            grid.attach(widget, 1, row, 1, 1)
-            row += 1
+        stack = Gtk.Stack()
+        grid.attach(stack, 0, 1, 1, 1)
+        switcher = Gtk.StackSwitcher()
+        switcher.set_stack(stack)
+        grid.attach(switcher, 0, 0, 1, 1)
+
+        for stack_key, (stack_title, stack_fields) in self._fields.items():
+            stack_grid = Gtk.Grid()
+            row = 0
+            for key, (label, widget) in stack_fields.items():
+                label_widget = Gtk.Label(label)
+                label_widget.set_use_underline(True)
+                label_widget.set_mnemonic_widget(widget)
+                stack_grid.attach(label_widget, 0, row, 1, 1)
+                stack_grid.attach(widget, 1, row, 1, 1)
+                row += 1
+            stack.add_titled(stack_grid, stack_key, stack_title)
 
         self._set_config(initial)
 
@@ -96,8 +110,9 @@ class PreferencesDialog(Gtk.Dialog):
             dict: Dictionary of config keys/values.
         """
         result = {}
-        for key, (_label, widget) in self._fields.items():
-            result[key] = widget.get_config_value()
+        for stack_key, (stack_title, stack_fields) in self._fields.items():
+            for key, (_label, widget) in stack_fields.items():
+                result[key] = widget.get_config_value()
 
         return result
 
@@ -108,5 +123,6 @@ class PreferencesDialog(Gtk.Dialog):
         Args:
             values (dict): Dictionary of config keys/values
         """
-        for key, (_label, widget) in self._fields.items():
-            widget.set_config_value(values[key])
+        for stack_key, (stack_title, stack_fields) in self._fields.items():
+            for key, (_label, widget) in stack_fields.items():
+                widget.set_config_value(values[key])
