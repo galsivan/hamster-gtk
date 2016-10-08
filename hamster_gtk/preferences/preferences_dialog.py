@@ -78,6 +78,7 @@ class PreferencesDialog(Gtk.Dialog):
 
         grid = Gtk.Grid()
         stack = Gtk.Stack()
+        stack.set_name('PreferencesStack')
         grid.attach(stack, 0, 1, 1, 1)
         switcher = Gtk.StackSwitcher()
         switcher.set_stack(stack)
