@@ -13,6 +13,7 @@ env:
   - TOXENV=pep257
   - TOXENV=manifest
   - TOXENV=docs
+  - TOXENV=travis
 
 cache: pip
 
