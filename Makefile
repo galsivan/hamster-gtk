@@ -73,7 +73,7 @@ test-all:
 	tox
 
 coverage:
-	xvfb-run coverage run -m pytest $(TEST_ARGS) tests
+	xvfb-run -a coverage run -m pytest $(TEST_ARGS) tests
 	coverage report
 
 coverage-no-xvfb:
