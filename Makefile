@@ -90,6 +90,7 @@ codecov: coverage
 docs:
 	rm -f docs/hamster_gtk.rst
 	rm -f docs/modules.rst
+	which python
 	sphinx-apidoc -o docs/ hamster_gtk
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html

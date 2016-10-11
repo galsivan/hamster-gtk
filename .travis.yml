@@ -5,8 +5,6 @@ sudo: required
 dist: trusty
 
 language: python
-python:
-    - "2.7"
 
 env:
   - TOXENV=flake8
@@ -30,9 +28,10 @@ addons:
     - python3-gi
     - python3-cairo
     - python3-gi-cairo
+    - tree
 
-virtualenv:
-  system_site_packages: true
+# virtualenv:
+#   system_site_packages: true
 
 install:
   - pip install --upgrade pip
@@ -47,4 +46,14 @@ before_script:
   - sleep 3 # give xvfb some time to start
 
 script:
+    - which python
+    - ls -l `which python`
+    - tree -L 3 $(dirname $(dirname $(which python)))/lib
+    - python -c "import sys; print(sys.path)"
+    - which tox
+    - cat `which tox`
+    - ls /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages/
+    - ls /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages/tox*
+    - which virtualenv
+    - sudo sed -i "s/\( \+\)\(args = [sys.executable, '-m', 'virtualenv']\)/\1print('0000000000', sys.executable)\n\1\2/" /home/travis/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages/tox/venv.py
     - tox
