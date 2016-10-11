@@ -38,6 +38,8 @@ virtualenv:
 install:
         #- pip install --upgrade pip
     #- pip install -r requirements/test.pip
+  - pip install --upgrade pip
+  - pip install --upgrade tox
   - sudo apt-get install --only-upgrade libgtk-3-dev
 
 before_script:
